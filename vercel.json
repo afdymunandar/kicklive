@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "functions": {
+    "api/schedule.js": { "maxDuration": 10 },
+    "api/standings.js": { "maxDuration": 10 }
+  }
+}
