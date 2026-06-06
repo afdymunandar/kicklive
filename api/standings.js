@@ -1,111 +1,101 @@
-// api/standings.js - Vercel Serverless Function
-// Fetch WC2026 standings dari API-Sports, cache ke Upstash Redis 30 menit
+// api/standings.js - pakai worldcup26.ir (gratis, no auth)
 
 const UPSTASH_URL = process.env.UPSTASH_REDIS_REST_URL;
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
-const API_KEY = process.env.API_SPORTS_KEY;
-const CACHE_KEY = 'wc2026_standings';
-const CACHE_TTL = 1800; // 30 menit
-const WC2026_ID = 1; // World Cup 2026 league ID
+const CACHE_KEY = 'wc2026_standings_v2';
+const CACHE_TTL = 300; // 5 menit
 
 async function redisGet(key) {
-  const res = await fetch(`${UPSTASH_URL}/get/${key}`, {
-    headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
-  });
-  const data = await res.json();
-  return data.result ? JSON.parse(data.result) : null;
+  try {
+    const res = await fetch(`${UPSTASH_URL}/get/${key}`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const data = await res.json();
+    return data.result ? JSON.parse(data.result) : null;
+  } catch { return null; }
 }
 
 async function redisSet(key, value, ttl) {
-  await fetch(`${UPSTASH_URL}/set/${key}?EX=${ttl}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${UPSTASH_TOKEN}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(JSON.stringify(value))
-  });
+  try {
+    await fetch(`${UPSTASH_URL}/set/${key}?EX=${ttl}`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${UPSTASH_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(JSON.stringify(value))
+    });
+  } catch {}
 }
 
-async function fetchFromAPI() {
-  const res = await fetch('https://v3.football.api-sports.io/standings?league=' + WC2026_ID + '&season=2026', {
-    headers: { 'x-apisports-key': API_KEY }
-  });
-  const data = await res.json();
+const FLAG_MAP = {
+  'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'South Korea': '🇰🇷', 'Czech Republic': '🇨🇿',
+  'USA': '🇺🇸', 'United States': '🇺🇸', 'Canada': '🇨🇦', 'Brazil': '🇧🇷',
+  'France': '🇫🇷', 'Germany': '🇩🇪', 'Argentina': '🇦🇷', 'Spain': '🇪🇸',
+  'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱', 'Italy': '🇮🇹',
+  'Belgium': '🇧🇪', 'Croatia': '🇭🇷', 'Morocco': '🇲🇦', 'Japan': '🇯🇵',
+  'Australia': '🇦🇺', 'Ecuador': '🇪🇨', 'Senegal': '🇸🇳', 'Ghana': '🇬🇭',
+  'Cameroon': '🇨🇲', 'Tunisia': '🇹🇳', 'Saudi Arabia': '🇸🇦', 'Iran': '🇮🇷',
+  'Poland': '🇵🇱', 'Denmark': '🇩🇰', 'Serbia': '🇷🇸', 'Switzerland': '🇨🇭',
+  'Uruguay': '🇺🇾', 'Colombia': '🇨🇴', 'Chile': '🇨🇱', 'Peru': '🇵🇪',
+  'Costa Rica': '🇨🇷', 'Panama': '🇵🇦', 'Honduras': '🇭🇳', 'Jamaica': '🇯🇲',
+  'Algeria': '🇩🇿', 'Egypt': '🇪🇬', 'Nigeria': '🇳🇬', 'Ivory Coast': '🇨🇮',
+  'Mali': '🇲🇱', 'Turkey': '🇹🇷', 'Ukraine': '🇺🇦', 'Austria': '🇦🇹',
+  'Sweden': '🇸🇪', 'Norway': '🇳🇴', 'New Zealand': '🇳🇿', 'Indonesia': '🇮🇩',
+  'Greece': '🇬🇷', 'Romania': '🇷🇴', 'Slovakia': '🇸🇰', 'Iraq': '🇮🇶',
+  'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Guinea': '🇬🇳', 'Kenya': '🇰🇪'
+};
 
-  if (!data.response || data.response.length === 0) {
-    return null;
-  }
-
-  const standings = {};
-  const allStandings = data.response[0]?.league?.standings || [];
-
-  allStandings.forEach(groupArr => {
-    if (!groupArr.length) return;
-    // Group name: "Group A" → "A"
-    const groupName = groupArr[0]?.group?.replace('Group ', '') || '?';
-    standings[groupName] = groupArr.map(team => ({
-      pos: team.rank,
-      name: team.team.name,
-      flag: getFlagEmoji(team.team.name),
-      p: team.all.played,
-      w: team.all.win,
-      d: team.all.draw,
-      l: team.all.lose,
-      gf: team.all.goals.for,
-      ga: team.all.goals.against,
-      gd: team.goalsDiff,
-      pts: team.points
-    }));
-  });
-
-  return {
-    standings,
-    lastUpdated: new Date().toISOString()
-  };
-}
-
-function getFlagEmoji(countryName) {
-  const flags = {
-    'Brazil': '🇧🇷', 'France': '🇫🇷', 'Germany': '🇩🇪', 'Argentina': '🇦🇷',
-    'Spain': '🇪🇸', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
-    'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Croatia': '🇭🇷', 'Mexico': '🇲🇽',
-    'USA': '🇺🇸', 'Canada': '🇨🇦', 'Morocco': '🇲🇦', 'Japan': '🇯🇵',
-    'South Korea': '🇰🇷', 'Australia': '🇦🇺', 'Saudi Arabia': '🇸🇦', 'Iran': '🇮🇷',
-    'Poland': '🇵🇱', 'Denmark': '🇩🇰', 'Serbia': '🇷🇸', 'Switzerland': '🇨🇭',
-    'Uruguay': '🇺🇾', 'Colombia': '🇨🇴', 'Ecuador': '🇪🇨', 'Chile': '🇨🇱',
-    'Peru': '🇵🇪', 'Bolivia': '🇧🇴', 'Venezuela': '🇻🇪', 'Paraguay': '🇵🇾',
-    'Costa Rica': '🇨🇷', 'Panama': '🇵🇦', 'Honduras': '🇭🇳', 'Jamaica': '🇯🇲',
-    'Algeria': '🇩🇿', 'Egypt': '🇪🇬', 'Nigeria': '🇳🇬', 'Ivory Coast': '🇨🇮',
-    'Morocco': '🇲🇦', 'Senegal': '🇸🇳', 'Ghana': '🇬🇭', 'Cameroon': '🇨🇲',
-    'Tunisia': '🇹🇳', 'South Africa': '🇿🇦', 'Mali': '🇲🇱', 'Guinea': '🇬🇳',
-    'Turkey': '🇹🇷', 'Ukraine': '🇺🇦', 'Czech Republic': '🇨🇿', 'Austria': '🇦🇹',
-    'Sweden': '🇸🇪', 'Norway': '🇳🇴', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
-    'New Zealand': '🇳🇿', 'Indonesia': '🇮🇩', 'Japan': '🇯🇵', 'Qatar': '🇶🇦'
-  };
-  return flags[countryName] || '🏳️';
-}
+function getFlag(name) { return FLAG_MAP[name] || '🏳️'; }
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET');
-  res.setHeader('Cache-Control', 'public, max-age=900');
+  res.setHeader('Cache-Control', 'public, max-age=60');
 
   try {
     const cached = await redisGet(CACHE_KEY);
-    if (cached) {
-      return res.status(200).json({ ...cached, fromCache: true });
-    }
+    if (cached) return res.status(200).json({ ...cached, fromCache: true });
 
-    const fresh = await fetchFromAPI();
-    if (!fresh) {
-      return res.status(200).json({ standings: {}, lastUpdated: new Date().toISOString(), error: 'No standings data yet' });
-    }
+    const response = await fetch('https://worldcup26.ir/get/groups', {
+      headers: { 'Accept': 'application/json', 'User-Agent': 'KickLive/1.0' }
+    });
 
-    await redisSet(CACHE_KEY, fresh, CACHE_TTL);
-    return res.status(200).json({ ...fresh, fromCache: false });
+    if (!response.ok) throw new Error('API failed: ' + response.status);
+    const raw = await response.json();
+
+    const groups = Array.isArray(raw) ? raw : (raw.groups || raw.data || []);
+    const standings = {};
+
+    groups.forEach(group => {
+      const groupName = (group.name || group.group || '').replace('Group ', '').trim();
+      if (!groupName) return;
+
+      const teams = group.teams || group.standings || [];
+      standings[groupName] = teams.map((t, i) => ({
+        pos: t.position || t.rank || (i + 1),
+        name: t.name || t.team_name || t.team || 'TBD',
+        flag: getFlag(t.name || t.team_name || t.team || ''),
+        p: t.played || t.games_played || 0,
+        w: t.won || t.wins || 0,
+        d: t.drawn || t.draws || 0,
+        l: t.lost || t.losses || 0,
+        gf: t.goals_for || t.gf || 0,
+        ga: t.goals_against || t.ga || 0,
+        gd: t.goal_difference || t.gd || 0,
+        pts: t.points || t.pts || 0
+      }));
+    });
+
+    const result = { standings, lastUpdated: new Date().toISOString() };
+    await redisSet(CACHE_KEY, result, CACHE_TTL);
+    return res.status(200).json({ ...result, fromCache: false });
+
   } catch (err) {
-    console.error('Standings API error:', err);
-    return res.status(500).json({ standings: {}, error: err.message });
+    // Kalau gagal return empty — tournament belum mulai wajar kosong
+    return res.status(200).json({
+      standings: {},
+      lastUpdated: new Date().toISOString(),
+      error: err.message
+    });
   }
 }
