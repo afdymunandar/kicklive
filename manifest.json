@@ -1,0 +1,19 @@
+{
+  "name": "KickLive - World Cup 2026",
+  "short_name": "KickLive",
+  "description": "FIFA World Cup 2026 Live Stream, Scores & Schedule",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "https://digitalhub.fifa.com/m/6f4f5e76af63d6e0/original/FIFA-World-Cup-2026-emblem.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "https://digitalhub.fifa.com/m/6f4f5e76af63d6e0/original/FIFA-World-Cup-2026-emblem.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "categories": ["sports", "entertainment"],
+  "shortcuts": [
+    { "name": "Live Stream", "url": "/", "description": "Watch live matches" },
+    { "name": "Schedule", "url": "/?page=schedule", "description": "Full match schedule" }
+  ]
+}
