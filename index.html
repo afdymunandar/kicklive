@@ -5,355 +5,118 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="referrer" content="no-referrer" />
   <title>KickLiveC</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230a0a0f'/%3E%3Ctext x='50' y='72' font-size='58' text-anchor='middle' fill='%23FFD700' font-family='Arial,Inter,sans-serif' font-weight='800'%3EK%3C/text%3E%3Ccircle cx='50' cy='22' r='7' fill='%23FFD700'/%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background: #0a0a0f;
-      color: #fff;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-    }
+    body { background: #0a0a0f; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; }
 
-    /* ── HEADER ── */
-    header {
-      background: #0a0a0f;
-      border-bottom: 1px solid #1e1e2e;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .logo img {
-      height: 52px;
-      width: auto;
-      display: block;
-    }
+    header { background: #0a0a0f; border-bottom: 1px solid #1e1e2e; padding: 16px 20px; display: flex; align-items: center; justify-content: center; position: sticky; top: 0; z-index: 100; }
+    .logo img { height: 52px; width: auto; display: block; }
 
-    /* ── MAIN CONTAINER ── */
+    .ad-banner-top { max-width: 1200px; margin: 12px auto 0; padding: 0 20px; display: flex; justify-content: center; min-height: 90px; }
+    .ad-banner-top iframe { display: block; border: none; }
+
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-    /* ── VIDEO PLAYER ── */
-    .player-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16/9;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid #1e1e2e;
-      margin-bottom: 24px;
-    }
-    .player-wrap iframe, .player-wrap video {
-      width: 100%; height: 100%; border: none; display: block;
-    }
-    .player-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      color: #555; font-size: 0.9rem;
-    }
+    .player-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid #1e1e2e; margin-bottom: 24px; }
+    .player-wrap iframe, .player-wrap video { width: 100%; height: 100%; border: none; display: block; }
+    .player-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #555; font-size: 0.9rem; }
 
-    /* ── VIDEO GRID (4x2 = 8 per page) ── */
-    .section-title {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #ff3e3e;
-      margin-bottom: 16px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .section-title::before {
-      content: '';
-      width: 4px; height: 16px;
-      background: #ff3e3e;
-      border-radius: 2px;
-    }
+    .ad-sidebar { display: flex; justify-content: center; margin: 20px 0; min-height: 250px; }
+    .ad-sidebar iframe { display: block; border: none; }
 
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .video-card {
-      background: #151520;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid #1e1e2e;
-    }
-    .video-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(255,62,62,0.15);
-      border-color: #ff3e3e40;
-    }
-    .video-card .thumb-wrap {
-      position: relative;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-    }
-    .video-card .thumb-wrap img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform 0.3s;
-    }
+    .smartlink-banner { max-width: 1200px; margin: 16px auto; padding: 0 20px; }
+    .smartlink-btn { display: block; width: 100%; padding: 14px 20px; background: linear-gradient(135deg, #ff3e3e, #ff6b6b); border: none; border-radius: 10px; color: #fff; font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .smartlink-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,62,62,0.3); }
+    .smartlink-btn small { display: block; font-size: 0.7rem; font-weight: 400; opacity: 0.8; margin-top: 2px; }
+
+    .section-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #ff3e3e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .section-title::before { content: ''; width: 4px; height: 16px; background: #ff3e3e; border-radius: 2px; }
+
+    .video-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+    .video-card { background: #151520; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #1e1e2e; }
+    .video-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,62,62,0.15); border-color: #ff3e3e40; }
+    .video-card .thumb-wrap { position: relative; aspect-ratio: 16/9; overflow: hidden; }
+    .video-card .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
     .video-card:hover .thumb-wrap img { transform: scale(1.05); }
-    .video-card .play-overlay {
-      position: absolute; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(0,0,0,0.3);
-      opacity: 0; transition: opacity 0.2s;
-    }
+    .video-card .play-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s; }
     .video-card:hover .play-overlay { opacity: 1; }
-    .play-overlay span {
-      width: 44px; height: 44px;
-      background: #ff3e3e;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-    }
-    .video-card .v-title {
-      padding: 10px 12px;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: #ddd;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .play-overlay span { width: 44px; height: 44px; background: #ff3e3e; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .video-card .v-title { padding: 10px 12px; font-size: 0.78rem; font-weight: 500; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── PAGINATION ── */
-    .pagination {
-      display: flex; justify-content: center; gap: 6px;
-      margin: 20px 0 40px;
-      flex-wrap: wrap;
-    }
-    .page-btn {
-      background: #151520;
-      border: 1px solid #2a2a3e;
-      color: #888;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
-      min-width: 36px;
-    }
+    .pagination { display: flex; justify-content: center; gap: 6px; margin: 20px 0 40px; flex-wrap: wrap; }
+    .page-btn { background: #151520; border: 1px solid #2a2a3e; color: #888; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; font-family: 'Inter', sans-serif; min-width: 36px; }
     .page-btn:hover { background: #1e1e2e; color: #fff; }
-    .page-btn.active {
-      background: #ff3e3e;
-      border-color: #ff3e3e;
-      color: #fff;
-    }
+    .page-btn.active { background: #ff3e3e; border-color: #ff3e3e; color: #fff; }
     .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .page-btn.dots {
-      background: transparent;
-      border: none;
-      cursor: default;
-      color: #555;
-    }
+    .page-btn.dots { background: transparent; border: none; cursor: default; color: #555; }
     .page-btn.dots:hover { background: transparent; color: #555; }
 
-    /* ── DIVIDER ── */
-    .divider {
-      height: 1px;
-      background: #1e1e2e;
-      margin: 32px 0;
-    }
+    .divider { height: 1px; background: #1e1e2e; margin: 32px 0; }
 
-    /* ── COSPLAYER SECTION ── */
-    .cosplayer-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #ff3e3e;
-      margin-bottom: 16px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .cosplayer-label::before {
-      content: '';
-      width: 4px; height: 16px;
-      background: #ff3e3e;
-      border-radius: 2px;
-    }
+    .cosplayer-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #ff3e3e; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .cosplayer-label::before { content: ''; width: 4px; height: 16px; background: #ff3e3e; border-radius: 2px; }
 
-    /* ── ALBUM GRID (6x2 = 12 per page) ── */
-    .album-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .album-card {
-      background: #151520;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid #1e1e2e;
-    }
-    .album-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(255,62,62,0.15);
-      border-color: #ff3e3e40;
-    }
-    .album-card img {
-      width: 100%;
-      aspect-ratio: 3/4;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s;
-    }
+    .album-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 20px; }
+    .album-card { background: #151520; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #1e1e2e; }
+    .album-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,62,62,0.15); border-color: #ff3e3e40; }
+    .album-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; transition: transform 0.3s; }
     .album-card:hover img { transform: scale(1.05); }
-    .album-card .a-title {
-      padding: 10px 12px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #ddd;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .album-card .a-title { padding: 10px 12px; font-size: 0.75rem; font-weight: 500; color: #ddd; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ── ALBUM DETAIL FULL PAGE (overlay) ── */
-    #album-detail-page {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #0a0a0f;
-      z-index: 200;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    .detail-header {
-      max-width: 1200px;
-      margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #1e1e2e;
-    }
-    .detail-header .back-btn {
-      background: #151520;
-      border: 1px solid #2a2a3e;
-      color: #fff;
-      padding: 8px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.8rem;
-      transition: all 0.2s;
-      font-family: 'Inter', sans-serif;
-    }
+    #album-detail-page { display: none; position: fixed; inset: 0; background: #0a0a0f; z-index: 200; overflow-y: auto; padding: 20px; }
+    .detail-header { max-width: 1200px; margin: 0 auto 20px; display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid #1e1e2e; }
+    .detail-header .back-btn { background: #151520; border: 1px solid #2a2a3e; color: #fff; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: all 0.2s; font-family: 'Inter', sans-serif; }
     .detail-header .back-btn:hover { background: #ff3e3e; border-color: #ff3e3e; }
-    .detail-header .detail-title-wrap {
-      flex: 1;
-    }
-    .detail-header .detail-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #fff;
-    }
-    .detail-header .detail-meta {
-      font-size: 0.8rem;
-      color: #888;
-    }
-    .detail-content {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .photo-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-    .photo-list img {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: transform 0.2s;
-      border: 1px solid #1e1e2e;
-      display: block;
-    }
-    .photo-list img:hover {
-      transform: scale(1.01);
-      border-color: #ff3e3e40;
-    }
+    .detail-header .detail-title-wrap { flex: 1; }
+    .detail-header .detail-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+    .detail-header .detail-meta { font-size: 0.8rem; color: #888; }
+    .detail-content { max-width: 1200px; margin: 0 auto; }
+    .photo-list { display: flex; flex-direction: column; gap: 16px; }
+    .photo-list img { width: 100%; max-width: 100%; border-radius: 10px; cursor: pointer; transition: transform 0.2s; border: 1px solid #1e1e2e; display: block; }
+    .photo-list img:hover { transform: scale(1.01); border-color: #ff3e3e40; }
 
-    /* ── LIGHTBOX ── */
-    #lightbox {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.95);
-      justify-content: center; align-items: center;
-      z-index: 999;
-    }
+    #lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; z-index: 999; }
     #lightbox.active { display: flex; }
-    #lightbox img {
-      max-width: 95vw; max-height: 95vh;
-      border-radius: 8px;
-    }
-    #lightbox-close {
-      position: absolute; top: 16px; right: 20px;
-      font-size: 1.8rem; cursor: pointer; color: #fff;
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,0.1);
-      border-radius: 50%;
-    }
+    #lightbox img { max-width: 95vw; max-height: 95vh; border-radius: 8px; }
+    #lightbox-close { position: absolute; top: 16px; right: 20px; font-size: 1.8rem; cursor: pointer; color: #fff; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); border-radius: 50%; }
 
-    /* ── LOADING / EMPTY ── */
-    .loading {
-      text-align: center; padding: 60px; color: #555; font-size: 0.9rem;
-    }
-    .empty {
-      text-align: center; padding: 40px; color: #555; font-size: 0.85rem;
-    }
+    .loading { text-align: center; padding: 60px; color: #555; font-size: 0.9rem; }
+    .empty { text-align: center; padding: 40px; color: #555; font-size: 0.85rem; }
 
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1024px) {
-      .album-grid { grid-template-columns: repeat(4, 1fr); }
-      .video-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 640px) {
-      .album-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      .video-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .container { padding: 12px; }
-      .logo img { height: 44px; }
-      #album-detail-page { padding: 12px; }
-    }
+    @media (max-width: 1024px) { .album-grid { grid-template-columns: repeat(4, 1fr); } .video-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px) { .album-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; } .video-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } .container { padding: 12px; } .logo img { height: 44px; } #album-detail-page { padding: 12px; } .ad-banner-top { padding: 0 12px; } .smartlink-banner { padding: 0 12px; } }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">
-    <img src="https://i.ibb.co.com/Hpknsb4N/Background-Eraser-20260626-155133253.png" alt="KickLiveC">
-  </div>
-</header>
+<header><div class="logo"><img src="https://i.ibb.co.com/Hpknsb4N/Background-Eraser-20260626-155133253.png" alt="KickLiveC"></div></header>
+
+<div class="ad-banner-top" id="ad-banner-top">
+  <script> atOptions = { 'key' : 'c5d23ec7c69c8b05cc2821f080cdb6c7', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} }; </script>
+  <script src="https://adeptdoorstep.com/c5d23ec7c69c8b05cc2821f080cdb6c7/invoke.js"></script>
+</div>
 
 <div class="container">
-
-  <!-- ═══════ VIDEO SECTION ═══════ -->
   <div id="video-section">
-    <div class="player-wrap" id="player-wrap">
-      <div class="player-placeholder">Pilih video dari daftar di bawah</div>
+    <div class="player-wrap" id="player-wrap"><div class="player-placeholder">Pilih video dari daftar di bawah</div></div>
+    <div class="smartlink-banner" id="smartlink-wrap">
+      <a href="https://adeptdoorstep.com/cnw3uy1g?key=ced12ff8f5e273715caa22e40112d9bc" class="smartlink-btn" target="_blank" rel="noopener" id="smartlink-btn">🔓 Unlock Full Content<small>Klik untuk akses konten lengkap</small></a>
     </div>
-
     <div class="section-title">Pilihan Video</div>
     <div class="video-grid" id="video-grid"></div>
     <div class="pagination" id="video-pagination"></div>
   </div>
 
+  <div class="ad-sidebar" id="ad-mid-1">
+    <script> atOptions = { 'key' : '91ab2298acf5af2001c508f54907d06b', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script>
+    <script src="https://adeptdoorstep.com/91ab2298acf5af2001c508f54907d06b/invoke.js"></script>
+  </div>
+
   <div class="divider"></div>
 
-  <!-- ═══════ COSPLAYER SECTION ═══════ -->
   <div id="cosplay-section">
     <div id="cosplay-list">
       <div class="cosplayer-label">COSPLAYER</div>
@@ -361,275 +124,147 @@
       <div class="pagination" id="album-pagination"></div>
     </div>
   </div>
-
 </div>
 
-<!-- ═══════ ALBUM DETAIL FULL PAGE (overlay) ═══════ -->
 <div id="album-detail-page">
   <div class="detail-header">
     <button class="back-btn" onclick="closeAlbumDetail()">← Kembali</button>
-    <div class="detail-title-wrap">
-      <div class="detail-title" id="detail-title"></div>
-      <div class="detail-meta" id="detail-meta"></div>
-    </div>
+    <div class="detail-title-wrap"><div class="detail-title" id="detail-title"></div><div class="detail-meta" id="detail-meta"></div></div>
   </div>
-  <div class="detail-content">
-    <div class="photo-list" id="photo-list"></div>
-  </div>
+  <div class="detail-content"><div class="photo-list" id="photo-list"></div></div>
 </div>
 
-<!-- Lightbox -->
 <div id="lightbox" onclick="closeLightbox(event)">
   <span id="lightbox-close" onclick="closeLightbox(event)">✕</span>
   <img id="lightbox-img" src="" />
 </div>
 
 <script>
-  // ═══════════════════════════════════════
-  //  KONFIGURASI
-  // ═══════════════════════════════════════
-  const SUPABASE_URL = 'https://yqssyapqimokatdduydj.supabase.co'
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxc3N5YXBxaW1va2F0ZGR1eWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNjYzNzMsImV4cCI6MjA5Nzk0MjM3M30.k0UN5wBKjm50qha3GD0M2dKGxYbjfcXZEoH4O5GFvMM'
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-  const DATA_JSON_URL = 'data.json'
-
-  // ═══════════════════════════════════════
-  //  STATE
-  // ═══════════════════════════════════════
-  let videos = []
-  let albums = []
-  let totalAlbums = 0
-  let videoPage = 1
-  let albumPage = 1
-  const VIDEOS_PER_PAGE = 8
-  const ALBUMS_PER_PAGE = 12
-
-  // ═══════════════════════════════════════
-  //  PAGINATION HELPER
-  // ═══════════════════════════════════════
-  function getPageNumbers(current, total) {
-    const pages = []
-    if (total <= 7) {
-      for (let i = 1; i <= total; i++) pages.push(i)
-    } else {
-      pages.push(1)
-      if (current > 3) pages.push('...')
-      const start = Math.max(2, current - 1)
-      const end = Math.min(total - 1, current + 1)
-      for (let i = start; i <= end; i++) pages.push(i)
-      if (current < total - 2) pages.push('...')
-      pages.push(total)
+  // ========== POPUNDER: 3x per 24 jam per browser ==========
+  (function() {
+    const POPUNDER_KEY = 'kc_popunder';
+    const DAY = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    let data = JSON.parse(localStorage.getItem(POPUNDER_KEY) || '{"count":0,"day":0}');
+    const currentDay = Math.floor(now / DAY);
+    if (data.day !== currentDay) { data = { count: 0, day: currentDay }; }
+    if (data.count < 3) {
+      data.count++;
+      localStorage.setItem(POPUNDER_KEY, JSON.stringify(data));
+      var s = document.createElement('script');
+      s.src = 'https://adeptdoorstep.com/23/9e/24/239e24d18a5567480ad899f98d7a8e63.js';
+      document.body.appendChild(s);
     }
-    return pages
-  }
-
-  // ═══════════════════════════════════════
-  //  VIDEO SECTION
-  // ═══════════════════════════════════════
-  async function loadVideos() {
-    const grid = document.getElementById('video-grid')
-    grid.innerHTML = '<div class="loading">Memuat video...</div>'
-    try {
-      const res = await fetch(DATA_JSON_URL)
-      videos = await res.json()
-      renderVideos()
-    } catch (e) {
-      grid.innerHTML = '<div class="empty">Gagal memuat data.json. Pastikan file tersedia.</div>'
-      console.error(e)
-    }
-  }
-
-  function renderVideos() {
-    const grid = document.getElementById('video-grid')
-    const start = (videoPage - 1) * VIDEOS_PER_PAGE
-    const pageVideos = videos.slice(start, start + VIDEOS_PER_PAGE)
-
-    grid.innerHTML = pageVideos.map((v, i) => `
-      <div class="video-card" onclick="playVideo(${start + i})">
-        <div class="thumb-wrap">
-          <img src="${v.thumbnail}" loading="lazy" onerror="this.src='https://placehold.co/320x180/1a1a2e/555?text=No+Thumb'">
-          <div class="play-overlay"><span>▶</span></div>
-        </div>
-        <div class="v-title">${v.title}</div>
-      </div>
-    `).join('')
-
-    renderVideoPagination()
-  }
-
-  function renderVideoPagination() {
-    const total = Math.ceil(videos.length / VIDEOS_PER_PAGE)
-    const wrap = document.getElementById('video-pagination')
-    if (total <= 1) { wrap.innerHTML = ''; return }
-
-    const pages = getPageNumbers(videoPage, total)
-    let html = `<button class="page-btn" onclick="changeVideoPage(${videoPage - 1})" ${videoPage === 1 ? 'disabled' : ''}>←</button>`
-    pages.forEach(p => {
-      if (p === '...') {
-        html += `<span class="page-btn dots">...</span>`
-      } else {
-        html += `<button class="page-btn ${p === videoPage ? 'active' : ''}" onclick="changeVideoPage(${p})">${p}</button>`
-      }
-    })
-    html += `<button class="page-btn" onclick="changeVideoPage(${videoPage + 1})" ${videoPage === total ? 'disabled' : ''}>→</button>`
-    wrap.innerHTML = html
-  }
-
-  function changeVideoPage(p) {
-    const total = Math.ceil(videos.length / VIDEOS_PER_PAGE)
-    if (p < 1 || p > total) return
-    videoPage = p
-    renderVideos()
-    document.getElementById('player-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  function playVideo(index) {
-    const v = videos[index]
-    if (!v) return
-    const wrap = document.getElementById('player-wrap')
-    wrap.innerHTML = `<iframe src="${v.embed_url}" allowfullscreen allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe>`
-  }
-
-  // ═══════════════════════════════════════
-  //  COSPLAY SECTION (SUPABASE SERVER-SIDE)
-  // ═══════════════════════════════════════
-  async function loadAlbumCount() {
-    const { count, error } = await db
-      .from('albums')
-      .select('*', { count: 'exact', head: true })
-    if (error) {
-      console.error('Count error:', error)
-      return
-    }
-    totalAlbums = count || 0
-    console.log('Total albums:', totalAlbums)
-  }
-
-  async function loadAlbums() {
-    const grid = document.getElementById('album-grid')
-    grid.innerHTML = '<div class="loading">Memuat album...</div>'
-
-    const start = (albumPage - 1) * ALBUMS_PER_PAGE
-    const end = start + ALBUMS_PER_PAGE - 1
-
-    const { data, error } = await db
-      .from('albums')
-      .select('id, title, cosplayer_name, cover_url')
-      .order('id', { ascending: false })
-      .range(start, end)
-
-    if (error) {
-      grid.innerHTML = '<div class="empty">Error: ' + error.message + '</div>'
-      console.error(error)
-      return
-    }
-
-    albums = data
-    renderAlbums()
-  }
-
-  function renderAlbums() {
-    const grid = document.getElementById('album-grid')
-
-    grid.innerHTML = albums.map(a => `
-      <div class="album-card" onclick="openAlbumDetail(${a.id})">
-        <img src="${a.cover_url}" loading="lazy" onerror="this.src='https://placehold.co/200x267/1a1a2e/555?text=No+Image'">
-        <div class="a-title">${a.title}</div>
-      </div>
-    `).join('')
-
-    renderAlbumPagination()
-  }
-
-  function renderAlbumPagination() {
-    const total = Math.ceil(totalAlbums / ALBUMS_PER_PAGE)
-    const wrap = document.getElementById('album-pagination')
-    if (total <= 1) { wrap.innerHTML = ''; return }
-
-    const pages = getPageNumbers(albumPage, total)
-    let html = `<button class="page-btn" onclick="changeAlbumPage(${albumPage - 1})" ${albumPage === 1 ? 'disabled' : ''}>←</button>`
-    pages.forEach(p => {
-      if (p === '...') {
-        html += `<span class="page-btn dots">...</span>`
-      } else {
-        html += `<button class="page-btn ${p === albumPage ? 'active' : ''}" onclick="changeAlbumPage(${p})">${p}</button>`
-      }
-    })
-    html += `<button class="page-btn" onclick="changeAlbumPage(${albumPage + 1})" ${albumPage === total ? 'disabled' : ''}>→</button>`
-    wrap.innerHTML = html
-  }
-
-  function changeAlbumPage(p) {
-    const total = Math.ceil(totalAlbums / ALBUMS_PER_PAGE)
-    if (p < 1 || p > total) return
-    albumPage = p
-    loadAlbums()
-    document.getElementById('cosplay-section').scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  // ═══════════════════════════════════════
-  //  ALBUM DETAIL FULL PAGE
-  // ═══════════════════════════════════════
-  async function openAlbumDetail(albumId) {
-    const album = albums.find(a => a.id === albumId)
-    if (!album) return
-
-    document.getElementById('detail-title').textContent = album.title
-    document.getElementById('detail-meta').textContent = album.cosplayer_name || ''
-
-    const list = document.getElementById('photo-list')
-    list.innerHTML = '<div class="loading">Memuat foto...</div>'
-
-    document.getElementById('album-detail-page').style.display = 'block'
-    document.body.style.overflow = 'hidden'
-    window.scrollTo(0, 0)
-
-    const { data, error } = await db
-      .from('photos')
-      .select('id, photo_url')
-      .eq('album_id', albumId)
-      .order('id', { ascending: true })
-
-    if (error) {
-      list.innerHTML = '<div class="empty">Error: ' + error.message + '</div>'
-      return
-    }
-
-    if (!data || data.length === 0) {
-      list.innerHTML = '<div class="empty">Tidak ada foto dalam album ini.</div>'
-      return
-    }
-
-    list.innerHTML = data.map(p => `
-      <img src="${p.photo_url}" loading="lazy" onclick="openLightbox('${p.photo_url}')" onerror="this.style.display='none'">
-    `).join('')
-  }
-
-  function closeAlbumDetail() {
-    document.getElementById('album-detail-page').style.display = 'none'
-    document.body.style.overflow = 'auto'
-  }
-
-  // ═══════════════════════════════════════
-  //  LIGHTBOX
-  // ═══════════════════════════════════════
-  function openLightbox(url) {
-    document.getElementById('lightbox-img').src = url
-    document.getElementById('lightbox').classList.add('active')
-  }
-  function closeLightbox(e) {
-    if (e.target.id === 'lightbox' || e.target.id === 'lightbox-close') {
-      document.getElementById('lightbox').classList.remove('active')
-    }
-  }
-
-  // ═══════════════════════════════════════
-  //  INIT
-  // ═══════════════════════════════════════
-  loadVideos()
-  loadAlbumCount().then(() => loadAlbums())
+  })();
 </script>
+<script src="https://adeptdoorstep.com/fe/a4/02/fea40242e486089c942126953f3095c6.js"></script>
 
-</body>
-</html>
+<script>
+  const SUPABASE_URL = 'https://yqssyapqimokatdduydj.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxc3N5YXBxaW1va2F0ZGR1eWRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNjYzNzMsImV4cCI6MjA5Nzk0MjM3M30.k0UN5wBKjm50qha3GD0M2dKGxYbjfcXZEoH4O5GFvMM';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const DATA_JSON_URL = 'data.json';
+  const CACHE_VIDEO_KEY = 'kc_video_cache'; const CACHE_VIDEO_TIME = 'kc_video_cache_time';
+  const CACHE_ALBUM_KEY = 'kc_album_cache'; const CACHE_ALBUM_TIME = 'kc_album_cache_time';
+  const CACHE_PHOTO_PREFIX = 'kc_photo_';
+  const CACHE_DURATION = 5 * 60 * 1000;
+
+  let videos = [], albums = [], allAlbums = [];
+  let totalAlbums = 0, videoPage = 1, albumPage = 1;
+  let fetchedRanges = [];
+  const VIDEOS_PER_PAGE = 8, ALBUMS_PER_PAGE = 12, BATCH_SIZE = 50;
+
+  // ========== URL / HISTORY ==========
+  function getUrlParams() {
+    const p = new URLSearchParams(window.location.search);
+    return { vpage: parseInt(p.get('vpage')) || 1, apage: parseInt(p.get('apage')) || 1, video: parseInt(p.get('video')) || null, album: parseInt(p.get('album')) || null };
+  }
+  function updateUrl(params, push = true) {
+    const url = new URL(window.location.href); url.search = '';
+    if (params.vpage > 1) url.searchParams.set('vpage', params.vpage);
+    if (params.apage > 1) url.searchParams.set('apage', params.apage);
+    if (params.video != null) url.searchParams.set('video', params.video);
+    if (params.album != null) url.searchParams.set('album', params.album);
+    const newUrl = url.toString();
+    if (push) history.pushState(params, '', newUrl); else history.replaceState(params, '', newUrl);
+  }
+  window.addEventListener('popstate', function() {
+    const params = getUrlParams(); videoPage = params.vpage; albumPage = params.apage;
+    renderVideos();
+    if (params.album) openAlbumDetail(params.album, false); else { closeAlbumDetail(); applyAlbumPage(); }
+    if (params.video != null) playVideo(params.video, false);
+  });
+
+  // ========== CACHE ==========
+  function getCache(key, timeKey) { const ts = parseInt(localStorage.getItem(timeKey) || '0'); if (Date.now() - ts > CACHE_DURATION) return null; try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } }
+  function setCache(key, timeKey, data) { localStorage.setItem(key, JSON.stringify(data)); localStorage.setItem(timeKey, Date.now().toString()); }
+
+  // ========== PAGINATION HELPER ==========
+  function getPageNumbers(current, total) { const pages = []; if (total <= 7) { for (let i = 1; i <= total; i++) pages.push(i); } else { pages.push(1); if (current > 3) pages.push('...'); const s = Math.max(2, current - 1), e = Math.min(total - 1, current + 1); for (let i = s; i <= e; i++) pages.push(i); if (current < total - 2) pages.push('...'); pages.push(total); } return pages; }
+
+  // ========== VIDEO ==========
+  async function loadVideos() { const grid = document.getElementById('video-grid'); grid.innerHTML = '<div class="loading">Memuat video...</div>'; const cached = getCache(CACHE_VIDEO_KEY, CACHE_VIDEO_TIME); if (cached) { videos = cached; renderVideos(); return; } try { const res = await fetch(DATA_JSON_URL); videos = await res.json(); setCache(CACHE_VIDEO_KEY, CACHE_VIDEO_TIME, videos); renderVideos(); } catch (e) { grid.innerHTML = '<div class="empty">Gagal memuat data.json.</div>'; console.error(e); } }
+  function renderVideos() { const grid = document.getElementById('video-grid'); const start = (videoPage - 1) * VIDEOS_PER_PAGE; const pageVideos = videos.slice(start, start + VIDEOS_PER_PAGE); grid.innerHTML = pageVideos.map((v, i) => `<div class="video-card" onclick="playVideo(${start + i})"><div class="thumb-wrap"><img src="${v.thumbnail}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/320x180/1a1a2e/555?text=No+Thumb'"><div class="play-overlay"><span>▶</span></div></div><div class="v-title">${v.title}</div></div>`).join(''); renderVideoPagination(); }
+  function renderVideoPagination() { const total = Math.ceil(videos.length / VIDEOS_PER_PAGE); const wrap = document.getElementById('video-pagination'); if (total <= 1) { wrap.innerHTML = ''; return; } const pages = getPageNumbers(videoPage, total); let html = `<button class="page-btn" onclick="changeVideoPage(${videoPage - 1})" ${videoPage === 1 ? 'disabled' : ''}>←</button>`; pages.forEach(p => { if (p === '...') html += `<span class="page-btn dots">...</span>`; else html += `<button class="page-btn ${p === videoPage ? 'active' : ''}" onclick="changeVideoPage(${p})">${p}</button>`; }); html += `<button class="page-btn" onclick="changeVideoPage(${videoPage + 1})" ${videoPage === total ? 'disabled' : ''}>→</button>`; wrap.innerHTML = html; }
+  function changeVideoPage(p) { const total = Math.ceil(videos.length / VIDEOS_PER_PAGE); if (p < 1 || p > total) return; videoPage = p; updateUrl({ vpage: videoPage, apage: albumPage > 1 ? albumPage : null }); renderVideos(); document.getElementById('player-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  function playVideo(index, push = true) { const v = videos[index]; if (!v) return; document.getElementById('player-wrap').innerHTML = `<iframe src="${v.embed_url}" allowfullscreen allow="autoplay; fullscreen" referrerpolicy="no-referrer"></iframe>`; if (push) updateUrl({ video: index, vpage: videoPage > 1 ? videoPage : null, apage: albumPage > 1 ? albumPage : null }); }
+
+  // ========== SMARTLINK BANNER (10 menit) ==========
+  (function() { const SMARTLINK_KEY = 'smartlink_last'; const TEN_MIN = 10 * 60 * 1000; const now = Date.now(); const last = parseInt(localStorage.getItem(SMARTLINK_KEY) || '0'); if (now - last < TEN_MIN) document.getElementById('smartlink-wrap').style.display = 'none'; const btn = document.getElementById('smartlink-btn'); if (btn) btn.addEventListener('click', () => { localStorage.setItem(SMARTLINK_KEY, Date.now().toString()); document.getElementById('smartlink-wrap').style.display = 'none'; }); })();
+
+  // ========== SMARTLINK ALBUM (10 menit cooldown, redirect) ==========
+  const SMARTLINK_ALBUM_KEY = 'smartlink_album_last';
+  const SMARTLINK_URL = 'https://adeptdoorstep.com/cnw3uy1g?key=ced12ff8f5e273715caa22e40112d9bc';
+  const PENDING_ALBUM_KEY = 'kc_pending_album';
+
+  function shouldShowSmartlinkAlbum() {
+    const last = parseInt(localStorage.getItem(SMARTLINK_ALBUM_KEY) || '0');
+    return (Date.now() - last) >= (10 * 60 * 1000);
+  }
+  function triggerSmartlinkAlbum(albumId) {
+    if (shouldShowSmartlinkAlbum()) {
+      localStorage.setItem(SMARTLINK_ALBUM_KEY, Date.now().toString());
+      localStorage.setItem(PENDING_ALBUM_KEY, albumId);
+      window.location.href = SMARTLINK_URL;
+      return true;
+    }
+    return false;
+  }
+  // Cek jika kembali dari smartlink
+  (function() {
+    const pending = localStorage.getItem(PENDING_ALBUM_KEY);
+    if (pending) {
+      localStorage.removeItem(PENDING_ALBUM_KEY);
+      // Tunggu DOM ready lalu buka album
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(() => openAlbumDetail(parseInt(pending), false), 300));
+      } else {
+        setTimeout(() => openAlbumDetail(parseInt(pending), false), 300);
+      }
+    }
+  })();
+
+  // ========== ALBUMS: SMART PAGINATION ==========
+  function isRangeFetched(start, end) { for (let r of fetchedRanges) { if (start >= r[0] && end <= r[1]) return true; } return false; }
+  function addRange(start, end) {
+    fetchedRanges.push([start, end]);
+    fetchedRanges.sort((a, b) => a[0] - b[0]);
+    const merged = [fetchedRanges[0]];
+    for (let i = 1; i < fetchedRanges.length; i++) { const last = merged[merged.length - 1]; if (fetchedRanges[i][0] <= last[1] + 1) last[1] = Math.max(last[1], fetchedRanges[i][1]); else merged.push(fetchedRanges[i]); }
+    fetchedRanges = merged;
+  }
+
+  async function fetchAlbumBatch(offset, limit) {
+    const { data, error } = await db.from('albums').select('id,title,cover_url').range(offset, offset + limit - 1);
+    if (error) { console.error('Supabase error:', error); return []; }
+    return data || [];
+  }
+
+  async function ensureAlbumsForPage(page) {
+    const startIndex = (page - 1) * ALBUMS_PER_PAGE;
+    const endIndex = startIndex + ALBUMS_PER_PAGE;
+    if (allAlbums.length >= endIndex) return;
+    if (isRangeFetched(startIndex, endIndex - 1)) return;
+    const fetchFrom = allAlbums.length;
+    const needCount = Math.max(endIndex - allAlb
